@@ -16,6 +16,8 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
                 new LanguageSelectorView({el: BB.Elements.LANGUAGE_SELECTOR});
             });
 
+            return;
+
             LocalCollection.prototype.deleteStorage();
             self._initDrawer();
             self._initPages();

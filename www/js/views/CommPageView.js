@@ -71,7 +71,7 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel'], functi
             var self = this;
             var unsubscribe = BB.comBroker.listenWebViews('pingpong', function (e, reply) {
                 log(e.fromWebView);
-                log('1'+e.event);
+                log('11111'+e.event);
                 log(e.data);
                 reply('echo reply...'); // need to setup listener on other side
             });
