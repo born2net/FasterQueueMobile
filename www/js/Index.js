@@ -16,11 +16,14 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
                 new LanguageSelectorView({el: BB.Elements.LANGUAGE_SELECTOR});
             });
 
+            self._initPages();
+            self._listenJoinQueue();
+
             return;
 
             LocalCollection.prototype.deleteStorage();
             self._initDrawer();
-            self._initPages();
+
             self._initModelsCollection();
             self._listenOrientationChange();
             self._listenGoToCommPage();
@@ -31,6 +34,20 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
                 supersonic.ui.layers.push(self.m_coolAnimView.getPageView());
             });
         },
+
+        _listenJoinQueue: function(){
+            var self = this;
+            $(BB.Elements.JOIN_QUEUE).on('click',function(){
+                var businessID = $(BB.Elements.INPUT_BUSINESS_ID).val();
+                if (!_.isFinite(businessID)){
+                    alert('you entered an invalid business id' + businessID);
+                    return;
+                }
+                supersonic.ui.layers.push(self.m_commPageView.getPageView());
+
+            });
+        },
+
 
         /**
          Create all the models and collections that we use to communicate with other pages and to server

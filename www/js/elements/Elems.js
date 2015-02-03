@@ -10,6 +10,8 @@ define(['jquery', 'backbone'], function ($, Backbone) {
 
         initialize: function () {
 
+            this.INPUT_BUSINESS_ID = '#inputBusinessId';
+            this.JOIN_QUEUE = '#joinQueue';
             this.GO_TO_ANIM_PAGE = '#toToAnimPage';
             this.LOCATION_ID_INPUT = '#locationIdInput';
             this.GET_SERVER_TIME= '#getServerTime';
