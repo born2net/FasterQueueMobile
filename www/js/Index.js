@@ -1,5 +1,5 @@
 /**
- BackSteroids, License MIT
+ BackSteroids, License MIT !!!
  Visit Github https://github.com/born2net/BackSteroids
  @class App
  @constructor
