@@ -1,5 +1,5 @@
 /**
- Setup globals per App view
+ Setup globals App view
  @class Setup
  @constructor
  @return {Object} instantiated Setup
