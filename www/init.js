@@ -22,7 +22,6 @@ require.config({
         'Lib': 'common/libs/Lib',
         'ComBroker': 'common/comBroker/ComBroker',
         'Elems': 'elements/Elems',
-        'CoolAnimElems': 'elements/CoolAnimElems',
         'CommPageElems': 'elements/CommPageElems',
         'DrawerElems': 'elements/DrawerElems',
         'SettingsElems': 'elements/SettingsElems',
@@ -31,7 +30,6 @@ require.config({
         'AuthCollection': 'collections/AuthCollection',
         'Setup': 'setup',
         'LanguageSelectorView': 'views/LanguageSelectorView',
-        'CoolAnimView': 'views/CoolAnimView',
         'CommPageView': 'views/CommPageView',
         'PageView': 'views/PageView',
         'StackView': 'common/stackview/StackView'

@@ -19,14 +19,53 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel'], functi
             var self = this;
             self._listenSendPong();
             self._initModelsCollection();
+            //self._pollNowServicing();
+        },
+
+        /**
+         Get the last called service_id for line
+         @method _pollNowServicing server:LastCalledQueue
+         **/
+        _pollNowServicing: function () {
+            var self = this;
+
+            var lastCalledQueue = function () {
+
+                $.ajax({
+                    url: 'https://secure.digitalsignage.com:442/LastCalledQueue',
+                    data: {
+                        business_id: self.myNotes1.at(0).get('business_id'),
+                        line_id: self.myNotes1.at(0).get('line_id')
+                    },
+                    success: function (i_model) {
+                        $(BB.Elements.NOW_SERVING).text(i_model.service_id);
+
+                    },
+                    error: function (e) {
+                        log('error ajax ' + e);
+                    },
+                    dataType: 'json'
+                });
+            };
+            self.m_statusHandler = setInterval(function () {
+                lastCalledQueue();
+            }, 5000);
+            lastCalledQueue();
         },
 
         /**
          Create all the models and collections that we use to communicate with other pages and to server
          @method _initModelsCollection
          **/
-        _initModelsCollection: function() {
+        _initModelsCollection: function () {
             var self = this;
+
+            self.myNotes1 = new AuthCollection([], {locationUrl: '/BusinessInfo'});
+            self.myNotes1.on('onLineId', function () {
+                self._pollNowServicing();
+            });
+            return;
+
             self.myNotes1 = new AuthCollection([], {locationUrl: '/cat'});
             var note = new NoteModel();
             self.myNotes1.add(note);
@@ -71,7 +110,7 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel'], functi
             var self = this;
             var unsubscribe = BB.comBroker.listenWebViews('pingpong', function (e, reply) {
                 log(e.fromWebView);
-                log('11111'+e.event);
+                log('11111' + e.event);
                 log(e.data);
                 reply('echo reply...'); // need to setup listener on other side
             });

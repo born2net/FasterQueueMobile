@@ -31,10 +31,11 @@ define(['jquery', 'backbone', 'backbone.localstorage'], function ($, Backbone, b
             var self = this;
             return self.locationUrl;
         },
+
         _listenToAllMyEvents: function () {
             var self = this;
             this.listenTo(this, 'all', function (event, model) {
-                if (_.isUndefined(model.id))
+                if (_.isUndefined(model) || _.isUndefined(model.id))
                     return;
                 log('announcing event: ' + event + ' ' + self.locationUrl + ' model id: ' + model.id);
                 BB.comBroker.fireWebViews(self.locationUrl, window.webViewer, {

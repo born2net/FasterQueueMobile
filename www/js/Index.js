@@ -16,13 +16,15 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
                 new LanguageSelectorView({el: BB.Elements.LANGUAGE_SELECTOR});
             });
 
+            LocalCollection.prototype.deleteStorage();
+
+            self.myNotes1 = new AuthCollection([], {locationUrl: '/BusinessInfo'});
+
             self._initPages();
             self._listenJoinQueue();
 
             return;
 
-            LocalCollection.prototype.deleteStorage();
-            self._initDrawer();
 
             self._initModelsCollection();
             self._listenOrientationChange();
@@ -30,48 +32,61 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
             self._listenGetServerTime();
             self._listenSendPing();
 
-            $(BB.Elements.GO_TO_ANIM_PAGE).on('click', function (e) {
-                supersonic.ui.layers.push(self.m_coolAnimView.getPageView());
-            });
         },
 
-        _listenJoinQueue: function(){
+        _listenJoinQueue: function () {
             var self = this;
-            $(BB.Elements.JOIN_QUEUE).on('click',function(){
-                var businessID = $(BB.Elements.INPUT_BUSINESS_ID).val();
-                if (!_.isFinite(businessID)){
-                    alert('you entered an invalid business id' + businessID);
+            $(BB.Elements.JOIN_QUEUE).on('click', function () {
+                var line_id = $(BB.Elements.LINE_ID).val();
+                if (!_.isFinite(line_id)) {
+                    alert('you entered an invalid line id' + line_id);
                     return;
                 }
-                supersonic.ui.layers.push(self.m_commPageView.getPageView());
-
+                self._getBusinessId(line_id);
             });
         },
 
+        _getBusinessId: function (i_line_id) {
+            var self = this;
+            $.ajax({
+                url: 'https://secure.digitalsignage.com:442/GetBusinessId',
+                data: {
+                    line_id: i_line_id
+                },
+                success: function (e) {
+                    if (e.status == false) {
+                        alert('line# does not exist');
+                        return;
+                    } else {
+                        var note = new NoteModel();
+                        note.set('line_id', i_line_id);
+                        note.set('business_id', e.business_id);
+                        self.myNotes1.add(note);
+                        note.save();
+                        // self.myNotes1.fetch();
+                        supersonic.ui.layers.push(self.m_commPageView.getPageView());
+                        return;
+                    }
+                },
+                error: function (e) {
+                    alert('err GetBusinessId ' + JSON.stringify(e));
+                },
+                dataType: 'json'
+            });
+        },
 
         /**
          Create all the models and collections that we use to communicate with other pages and to server
          @method _initModelsCollection
          **/
-        _initModelsCollection: function() {
+        _initModelsCollection: function () {
             var self = this, note
 
-            self.myNotes1 = new AuthCollection([], {locationUrl: '/cat'});
+            self.myNotes1 = new AuthCollection([], {locationUrl: '/BusinessInfo'});
             var note = new NoteModel();
             self.myNotes1.add(note);
             note.save();
             self.myNotes1.fetch();
-
-            self.myNotes2 = new AuthCollection([], {locationUrl: '/dog'});
-            var note = new Backbone.Model({'foo': 'bar1'});
-            self.myNotes2.add(note);
-            note.save();
-            self.myNotes2.fetch();
-
-            self.myNotes3 = new AuthCollection([], {locationUrl: '/lion'});
-            var note = new Backbone.Model({'foo': 'bar2'});
-            self.myNotes3.add(note);
-            note.save();
 
             $(BB.Elements.FIELD1).on('blur', function (e) {
                 var val = $(this).val();
@@ -115,7 +130,7 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
          Listen get server time
          @method _listenGetServerTime
          **/
-        _listenGetServerTime: function(){
+        _listenGetServerTime: function () {
             var self = this;
             $(BB.Elements.GET_SERVER_TIME).on('click', function (e) {
                 $.ajax({
@@ -135,79 +150,33 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
          Listen to go to CommPage
          @method _listenGoToCommPage
          **/
-        _listenGoToCommPage: function(){
+        _listenGoToCommPage: function () {
             var self = this;
-            $(BB.Elements.GO_TO_COMM_PAGE).on('click',function(){
+            $(BB.Elements.GO_TO_COMM_PAGE).on('click', function () {
                 supersonic.ui.layers.push(self.m_commPageView.getPageView());
             });
         },
 
         /**
-         Init the CoolAnim page and Comm page
+         Init the pages
          @method _initPages
          **/
-        _initPages: function(){
+        _initPages: function () {
             var self = this;
-            require(['StackView', 'CoolAnimView', 'CommPageView'], function (StackView, CoolAnimView, CommPageView) {
-
-
-                self.m_coolAnimView = new CoolAnimView({
-                    init: false
-                }).initializePage();
+            require(['StackView', 'CommPageView'], function (StackView, CommPageView) {
 
                 self.m_commPageView = new CommPageView({
                     init: false
                 }).initializePage();
 
-                //self.m_coolAnimView = (new CoolAnimView({init: false}));
-                //self.m_coolAnimView.initializePage();
-
-                // self.m_commPageView = new CommPageView({init: false});
-                // self.m_commPageView.initializePage();
-
-                // self.m_stackView = new StackView.Fader({duration: 1});
-
-                //var unsubscribe = supersonic.data.channel('events').subscribe(function (message, reply) {
-                //    alert('from : ' + message.from + ' ' + message.data);
-                //    var msg = {
-                //        from: 'app3',
-                //        data: 'message 2'
-                //    };
-                //    reply(msg);
-                //});
             });
-        },
-
-        /**
-         Init the Drawer Module on left side of app, we use timer to let app settle down
-         @method _initDrawer
-         **/
-        _initDrawer: function () {
-            var self = this;
-            /*
-             Uncomment the following lines if you wish to create the drawer manually
-             Be sure to change the the location entry under structure.coffee to: location: ""
-             so you can create the drawer in code instead...
-             */
-
-            //setTimeout(function () {
-            //    self.m_leftDrawer = new steroids.views.WebView("/pages/Drawer.html");
-            //    function updateDrawer() {
-            //        steroids.drawers.update({
-            //            left: self.m_leftDrawer
-            //        });
-            //    }
-            //   self.m_leftDrawer.preload({}, {
-            //        onSuccess: updateDrawer
-            //    });
-            //}, 50);
         },
 
         /**
          Listen to click on ping button
          @method _listenOrientationChange
          **/
-        _listenSendPing: function(){
+        _listenSendPing: function () {
             var self = this;
             $(BB.Elements.SEND_PING).on('click', function () {
                 BB.comBroker.fireWebViews('pingpong', window.webViewer, {ping: 'echo'});

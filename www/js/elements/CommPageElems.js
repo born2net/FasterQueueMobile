@@ -11,6 +11,7 @@ define(['jquery', 'backbone'], function ($, Backbone) {
         initialize: function () {
 
             // elements
+            this.NOW_SERVING = '#nowServing'
             this.FIELD1 = '#field1';
             this.FIELD2 = '#field2';
             this.FIELD3 = '#field3';
