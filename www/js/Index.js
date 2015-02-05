@@ -5,7 +5,7 @@
  @constructor
  @return {Object} instantiated App
  **/
-define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'NoteModel'], function (Setup, LocalCollection, AuthCollection, Elems, StackView, NoteModel) {
+define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'NoteModel', 'simplestorage'], function (Setup, LocalCollection, AuthCollection, Elems, StackView, NoteModel, simplestorage) {
     var App = Backbone.Controller.extend({
         initialize: function () {
             var self = this;
@@ -16,22 +16,30 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
                 new LanguageSelectorView({el: BB.Elements.LANGUAGE_SELECTOR});
             });
 
-            LocalCollection.prototype.deleteStorage();
+            self._loadSaveData();
 
             self.myNotes1 = new AuthCollection([], {locationUrl: '/BusinessInfo'});
 
             self._initPages();
             self._listenJoinQueue();
-
-            return;
-
-
-            self._initModelsCollection();
             self._listenOrientationChange();
-            self._listenGoToCommPage();
-            self._listenGetServerTime();
-            self._listenSendPing();
 
+
+        },
+
+        _loadSaveData: function () {
+            var self = this;
+            var savedData = simplestorage.get('fq');
+            self._clearLocalData();
+            if (savedData) {
+                simplestorage.set('fq', savedData);
+                $(BB.Elements.LINE_ID).val(savedData.line_id);
+            }
+        },
+
+        _clearLocalData: function () {
+            var self = this;
+            LocalCollection.prototype.deleteStorage();
         },
 
         _listenJoinQueue: function () {
@@ -76,88 +84,6 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
         },
 
         /**
-         Create all the models and collections that we use to communicate with other pages and to server
-         @method _initModelsCollection
-         **/
-        _initModelsCollection: function () {
-            var self = this, note
-
-            self.myNotes1 = new AuthCollection([], {locationUrl: '/BusinessInfo'});
-            var note = new NoteModel();
-            self.myNotes1.add(note);
-            note.save();
-            self.myNotes1.fetch();
-
-            $(BB.Elements.FIELD1).on('blur', function (e) {
-                var val = $(this).val();
-                self.myNotes1.at(0).set('foo', val);
-                self.myNotes1.at(0).save();
-            });
-
-            $(BB.Elements.FIELD2).on('blur', function (e) {
-                var val = $(this).val();
-                self.myNotes2.at(0).set('foo', val);
-                self.myNotes2.at(0).save();
-            });
-
-            $(BB.Elements.FIELD3).on('blur', function (e) {
-                var val = $(this).val();
-                self.myNotes3.at(0).set('foo', val);
-                self.myNotes3.at(0).save();
-            });
-
-            $(BB.Elements.SAVE_TO_SERVER).on('click', function (e) {
-                self.myNotes1.saveToServer(true);
-                self.myNotes1.at(0).save({}, {
-                    success: function (model) {
-                        jlog(model);
-                        alert('save success ' + model.get('date'));
-                    },
-                    error: function (model, e) {
-                        alert('err 2 ' + e.responseText);
-                        setTimeout(function () {
-                            log(JSON.stringify(e));
-                        }, 3000)
-                    },
-                    complete: function () {
-                        self.myNotes1.saveToServer(false);
-                    }
-                });
-            });
-        },
-
-        /**
-         Listen get server time
-         @method _listenGetServerTime
-         **/
-        _listenGetServerTime: function () {
-            var self = this;
-            $(BB.Elements.GET_SERVER_TIME).on('click', function (e) {
-                $.ajax({
-                    url: 'https://secure.digitalsignage.com:443/GetDateTime',
-                    success: function (dateTime) {
-                        alert('time is ' + dateTime.time)
-                    },
-                    error: function (e) {
-                        alert('err 3 ' + JSON.stringify(e));
-                    },
-                    dataType: 'json'
-                });
-            });
-        },
-
-        /**
-         Listen to go to CommPage
-         @method _listenGoToCommPage
-         **/
-        _listenGoToCommPage: function () {
-            var self = this;
-            $(BB.Elements.GO_TO_COMM_PAGE).on('click', function () {
-                supersonic.ui.layers.push(self.m_commPageView.getPageView());
-            });
-        },
-
-        /**
          Init the pages
          @method _initPages
          **/
@@ -169,17 +95,6 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
                     init: false
                 }).initializePage();
 
-            });
-        },
-
-        /**
-         Listen to click on ping button
-         @method _listenOrientationChange
-         **/
-        _listenSendPing: function () {
-            var self = this;
-            $(BB.Elements.SEND_PING).on('click', function () {
-                BB.comBroker.fireWebViews('pingpong', window.webViewer, {ping: 'echo'});
             });
         },
 

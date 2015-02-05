@@ -4,7 +4,7 @@
  @constructor
  @return {Object} instantiated CommPageView
  **/
-define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel'], function ($, Backbone, PageView, AuthCollection, NoteModel) {
+define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simplestorage'], function ($, Backbone, PageView, AuthCollection, NoteModel, simplestorage) {
 
     var CommPageView = PageView.extend({
 
@@ -17,9 +17,84 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel'], functi
          **/
         _initialize: function () {
             var self = this;
-            self._listenSendPong();
+
+            //self.m_base_url = BB.CONSTS.BASE_URL + '?mode=remoteStatus&param=';
+
             self._initModelsCollection();
-            //self._pollNowServicing();
+            self._listenLineButtons();
+            self._disableBackButto();
+        },
+
+        _disableBackButto: function () {
+
+            var leftButton = new steroids.buttons.NavigationBarButton();
+            var rightButton = new steroids.buttons.NavigationBarButton();
+
+            leftButton.title = ""
+            leftButton.onTap = function() {}
+
+            rightButton.title = ""
+            rightButton.onTap = function() {}
+
+            steroids.view.navigationBar.update({
+                overrideBackButton: true,
+                buttons: {
+                    left: [leftButton],
+                    right: [rightButton]
+                }
+            }, {
+                onSuccess: function() {
+                    steroids.view.navigationBar.show();
+                },
+                onFailure: function() {
+                    alert("Failed to update the navigation bar.");
+                }
+            });
+
+        },
+
+        _listenLineButtons: function () {
+            var self = this;
+            $(BB.Elements.GET_INLINE).on('click', function () {
+                $.ajax({
+                    url: BB.CONSTS.BASE_URL + '/SendQueueSMSEmail',
+                    data: {
+                        business_id: self.myNotes1.at(0).get('business_id'),
+                        line_id: self.myNotes1.at(0).get('line_id'),
+                        call_type: 'MOBILE',
+                        url: BB.CONSTS.BASE_URL
+                    },
+                    success: function (e) {
+
+                        var saveData = {
+                            business_id: self.myNotes1.at(0).get('business_id'),
+                            line_id: self.myNotes1.at(0).get('line_id'),
+                            service_id: e.service_id,
+                            verification: e.verification
+                        };
+                        simplestorage.set('fq', saveData);
+
+                        $(BB.Elements.GET_INLINE).hide();
+                        $(BB.Elements.RELEASE_SPOT).show();
+                        $(BB.Elements.LINE_POSITION_WRAP).show();
+                        $(BB.Elements.VERIFICATION_WRAP).show();
+
+                        $(BB.Elements.LINE_POSITION_WRAP).find('span').text(saveData.service_id);
+                        $(BB.Elements.VERIFICATION_WRAP).find('span').text(saveData.verification);
+                    },
+
+                    error: function (e) {
+                        log('error ajax ' + e);
+                    },
+                    dataType: 'json'
+                });
+            });
+
+            $(BB.Elements.RELEASE_SPOT).on('click', function () {
+                simplestorage.deleteKey('fq');
+                supersonic.ui.layers.pop();
+            });
+
         },
 
         /**
@@ -99,20 +174,6 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel'], functi
                 var val = $(this).val();
                 self.myNotes3.at(0).set('foo', val);
                 self.myNotes3.at(0).save();
-            });
-        },
-
-        /**
-         Listen to click on pong channel events
-         @method _listenSendPong
-         **/
-        _listenSendPong: function () {
-            var self = this;
-            var unsubscribe = BB.comBroker.listenWebViews('pingpong', function (e, reply) {
-                log(e.fromWebView);
-                log('11111' + e.event);
-                log(e.data);
-                reply('echo reply...'); // need to setup listener on other side
             });
         }
     });

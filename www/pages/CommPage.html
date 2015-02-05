@@ -20,27 +20,30 @@
 </head>
 <body>
 
+
+
+
 <div class="card padding" style="text-align: center">
     <label style="font-size: 3em">
         now serving <span id="nowServing"></span>
     </label>
 </div>
 
-<div class="card padding" style="text-align: center">
+<div id="linePositionWrap" class="card padding" style="text-align: center; display: none">
     <label style="font-size: 2em">
         Your are number <span id="linePosition">9199</span>
     </label>
 </div>
 
-<div class="card padding" style="text-align: center">
+<div id="verificationWrap" class="card padding" style="text-align: center; display: none">
     <label style="font-size: 2em">
         verification id <span id="verificationId">199</span>
     </label>
 </div>
 
 <div class="button-bar">
-    <button style="padding: 10px; margin: 0" class="button icon-left super-plus-circled button-positive">Get inline</button>
-    <button style="padding: 10px; margin: 0" class="button icon-left super-minus-circled button-positive">release my spot</button>
+    <button id="getInLine" style="padding: 10px; margin: 0" class="button icon-left super-plus-circled button-positive">Get inline</button>
+    <button id="releaseSpot" style="padding: 10px; margin: 0; display: none" class="button icon-left super-minus-circled button-positive">release my spot</button>
 </div>
 
 

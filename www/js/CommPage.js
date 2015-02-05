@@ -15,6 +15,8 @@ define(['Setup', 'CommPageElems'], function (Setup, CommPageElems) {
                 self.m_coolAnimView = new CommPageView({
                     el: 'body'
                 }).initializePage();
+
+                //self.m_coolAnimView.getPageView().
             });
         }
     });

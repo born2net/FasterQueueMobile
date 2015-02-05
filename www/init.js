@@ -21,6 +21,7 @@ require.config({
         'RC4': 'common/rc4/RC4',
         'Lib': 'common/libs/Lib',
         'ComBroker': 'common/comBroker/ComBroker',
+        'simplestorage': 'common/simplestorage/simpleStorage',
         'Elems': 'elements/Elems',
         'CommPageElems': 'elements/CommPageElems',
         'DrawerElems': 'elements/DrawerElems',

@@ -12,9 +12,10 @@ define(['jquery', 'backbone'], function ($, Backbone) {
 
             // elements
             this.NOW_SERVING = '#nowServing'
-            this.FIELD1 = '#field1';
-            this.FIELD2 = '#field2';
-            this.FIELD3 = '#field3';
+            this.GET_INLINE = '#getInLine';
+            this.RELEASE_SPOT = '#releaseSpot';
+            this.LINE_POSITION_WRAP= '#linePositionWrap';
+            this.VERIFICATION_WRAP = '#verificationWrap';
 
             // templates
 
