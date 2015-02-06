@@ -26,17 +26,16 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simple
         },
 
         _disableBackButto: function () {
-
+            var self = this;
             var leftButton = new steroids.buttons.NavigationBarButton();
             var rightButton = new steroids.buttons.NavigationBarButton();
-
-            leftButton.title = ""
-            leftButton.onTap = function() {}
-
-            rightButton.title = ""
-            rightButton.onTap = function() {}
+            leftButton.title = "";
+            leftButton.onTap = function() {};
+            rightButton.title = "";
+            rightButton.onTap = function() {};
 
             steroids.view.navigationBar.update({
+                title: 'virtual queue',
                 overrideBackButton: true,
                 buttons: {
                     left: [leftButton],
@@ -47,10 +46,8 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simple
                     steroids.view.navigationBar.show();
                 },
                 onFailure: function() {
-                    alert("Failed to update the navigation bar.");
                 }
             });
-
         },
 
         _listenLineButtons: function () {
