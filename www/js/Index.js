@@ -50,7 +50,7 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
         _getServerDateTime: function (i_cb) {
             var self = this;
             $.ajax({
-                url: 'https://secure.digitalsignage.com:442/GetDateTime',
+                url: BB.CONSTS.BASE_URL + '/GetDateTime',
                 success: function (dateTime) {
                     $.proxy(i_cb, self)(dateTime);
                 },
@@ -75,8 +75,6 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
                     return;
                 }
                 self._getBusinessId(line_id);
-
-
             });
         },
 

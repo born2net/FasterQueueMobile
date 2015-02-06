@@ -98,7 +98,7 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simple
         _getServerDateTime: function (i_cb) {
             var self = this;
             $.ajax({
-                url: 'https://secure.digitalsignage.com:442/GetDateTime',
+                url: BB.CONSTS.BASE_URL + '/GetDateTime',
                 success: function (dateTime) {
                     $.proxy(i_cb, self)(dateTime);
                 },
