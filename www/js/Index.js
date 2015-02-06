@@ -16,24 +16,21 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
                 new LanguageSelectorView({el: BB.Elements.LANGUAGE_SELECTOR});
             });
 
-            self._loadSaveData();
-
             self.myNotes1 = new AuthCollection([], {locationUrl: '/BusinessInfo'});
 
-            self._initPages();
+            self._loadSaveData();
             self._listenJoinQueue();
             self._listenOrientationChange();
-
-
+            self._initCommPage();
         },
 
         _loadSaveData: function () {
             var self = this;
-            var savedData = simplestorage.get('fq');
+            self.m_savedData = simplestorage.get('fq');
             self._clearLocalData();
-            if (savedData) {
-                simplestorage.set('fq', savedData);
-                $(BB.Elements.LINE_ID).val(savedData.line_id);
+            if (self.m_savedData) {
+                simplestorage.set('fq', self.m_savedData);
+                $(BB.Elements.LINE_ID).val(self.m_savedData.line_id);
             }
         },
 
@@ -51,6 +48,8 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
                     return;
                 }
                 self._getBusinessId(line_id);
+
+
             });
         },
 
@@ -66,12 +65,7 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
                         alert('line# does not exist');
                         return;
                     } else {
-                        var note = new NoteModel();
-                        note.set('line_id', i_line_id);
-                        note.set('business_id', e.business_id);
-                        self.myNotes1.add(note);
-                        note.save();
-                        // self.myNotes1.fetch();
+                        self._createModel(i_line_id, e.business_id);
                         supersonic.ui.layers.push(self.m_commPageView.getPageView());
                         return;
                     }
@@ -83,18 +77,33 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
             });
         },
 
+        _createModel: function (i_line_id, i_business_id) {
+            var self = this;
+            var note = new NoteModel();
+            note.set('line_id', i_line_id);
+            note.set('business_id', i_business_id);
+            self.myNotes1.add(note);
+            note.save();
+            // self.myNotes1.fetch();
+        },
+
         /**
          Init the pages
-         @method _initPages
+         @method _initCommPage
          **/
-        _initPages: function () {
+        _initCommPage: function () {
             var self = this;
             require(['StackView', 'CommPageView'], function (StackView, CommPageView) {
-
                 self.m_commPageView = new CommPageView({
                     init: false
                 }).initializePage();
 
+                BB.comBroker.listenWebViews('commPageReady', function () {
+                    if (self.m_savedData) {
+                        self._createModel(self.m_savedData.line_id, self.m_savedData.business_id);
+                        supersonic.ui.layers.push(self.m_commPageView.getPageView());
+                    }
+                });
             });
         },
 

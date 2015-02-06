@@ -22,8 +22,8 @@ define(['jquery', 'backbone', 'LocalCollection'], function ($, Backbone, LocalCo
             var self = this;
             var changedModelId = e.data.id;
             self.fetch();
-            log('Auth on sync: modelID: ' + changedModelId + ' locationURL: ' + self.locationUrl + ' JSON: ' + JSON.stringify(e) + ' models: ' + self.models);
-
+            // log('Auth on sync: modelID: ' + changedModelId + ' locationURL: ' + self.locationUrl + ' JSON: ' + JSON.stringify(e) + ' models: ' + self.models);
+            log('Auth on sync: modelID: ' + changedModelId + ' locationURL: ' + self.locationUrl + ' models: ' + self.models);
             switch (self.locationUrl){
                 case '/BusinessInfo': {
                     self.trigger('onLineId');

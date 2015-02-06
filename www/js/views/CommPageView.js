@@ -52,7 +52,9 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simple
 
         _listenLineButtons: function () {
             var self = this;
+
             $(BB.Elements.GET_INLINE).on('click', function () {
+                log('models ' + self.myNotes1.models.length);
                 $.ajax({
                     url: BB.CONSTS.BASE_URL + '/SendQueueSMSEmail',
                     data: {
@@ -131,47 +133,12 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simple
          **/
         _initModelsCollection: function () {
             var self = this;
-
             self.myNotes1 = new AuthCollection([], {locationUrl: '/BusinessInfo'});
             self.myNotes1.on('onLineId', function () {
                 self._pollNowServicing();
             });
-            return;
 
-            self.myNotes1 = new AuthCollection([], {locationUrl: '/cat'});
-            var note = new NoteModel();
-            self.myNotes1.add(note);
-            note.save();
-            self.myNotes1.fetch();
-
-            self.myNotes2 = new AuthCollection([], {locationUrl: '/dog'});
-            var note = new Backbone.Model({'foo': 'bar3'});
-            self.myNotes2.add(note);
-            note.save();
-            self.myNotes2.fetch();
-
-            self.myNotes3 = new AuthCollection([], {locationUrl: '/lion'});
-            var note = new Backbone.Model({'foo': 'bar4'});
-            self.myNotes3.add(note);
-            note.save();
-
-            $(BB.Elements.FIELD1).on('blur', function (e) {
-                var val = $(this).val();
-                self.myNotes1.at(0).set('foo', val);
-                self.myNotes1.at(0).save();
-            });
-
-            $(BB.Elements.FIELD2).on('blur', function (e) {
-                var val = $(this).val();
-                self.myNotes2.at(0).set('foo', val);
-                self.myNotes2.at(0).save();
-            });
-
-            $(BB.Elements.FIELD3).on('blur', function (e) {
-                var val = $(this).val();
-                self.myNotes3.at(0).set('foo', val);
-                self.myNotes3.at(0).save();
-            });
+            BB.comBroker.fireWebViews('commPageReady');
         }
     });
 
