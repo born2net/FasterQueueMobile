@@ -104,6 +104,8 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
                     if (self.m_savedData) {
                         self._createModel(self.m_savedData.line_id, self.m_savedData.business_id, self.m_savedData.verification, self.m_savedData.service_id);
                         supersonic.ui.layers.push(self.m_commPageView.getPageView());
+                    } else {
+                        $(BB.Elements.JOIN_QUEUE).show();
                     }
                 });
             });

@@ -66,7 +66,9 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simple
                         url: BB.CONSTS.BASE_URL
                     },
                     success: function (e) {
-                        self._onQueueDataAvailable(self.myNotes1.at(0).get('business_id'), self.myNotes1.at(0).get('line_id'), e.service_id, e.verification);
+                        self.myNotes1.at(0).set('service_id', e.service_id);
+                        self.myNotes1.at(0).set('verification_id', e.verification);
+                        self._onQueueDataAvailable();
                     },
 
                     error: function (e) {
@@ -79,22 +81,21 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simple
             $(BB.Elements.RELEASE_SPOT).on('click', function () {
                 simplestorage.deleteKey('fq');
                 $('.goodbye').hide();
-                setTimeout(function(){
+                setTimeout(function () {
                     navigator.app.exitApp();
-                },2000);
+                }, 2000);
                 $(BB.Elements.NOW_SERVING_LABEL).text('Goodbye');
                 //supersonic.ui.layers.pop();
             });
         },
 
-        _onQueueDataAvailable: function (i_business_id, i_line_id, i_service_id, i_verification_id) {
+        _onQueueDataAvailable: function () {
             var self = this;
-
             var saveData = {
-                business_id: i_business_id,
-                line_id: i_line_id,
-                service_id: i_service_id,
-                verification_id: i_verification_id
+                business_id: self.myNotes1.at(0).get('business_id'),
+                line_id: self.myNotes1.at(0).get('line_id'),
+                service_id: self.myNotes1.at(0).get('service_id'),
+                verification_id: self.myNotes1.at(0).get('verification_id')
             };
             simplestorage.set('fq', saveData);
 
@@ -102,9 +103,8 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simple
             $(BB.Elements.RELEASE_SPOT).show();
             $(BB.Elements.LINE_POSITION_WRAP).show();
             $(BB.Elements.VERIFICATION_WRAP).show();
-
-            $(BB.Elements.LINE_POSITION_WRAP).find('span').text(i_service_id);
-            $(BB.Elements.VERIFICATION_WRAP).find('span').text(i_verification_id);
+            $(BB.Elements.LINE_POSITION_WRAP).find('span').text(self.myNotes1.at(0).get('service_id'));
+            $(BB.Elements.VERIFICATION_WRAP).find('span').text(self.myNotes1.at(0).get('verification_id'));
         },
 
         /**
@@ -124,6 +124,10 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simple
                     },
                     success: function (i_model) {
                         $(BB.Elements.NOW_SERVING).text(i_model.service_id);
+                        if (i_model.service_id == self.myNotes1.at(0).get('service_id')) {
+                            navigator.notification.beep('1');
+                            navigator.notification.vibrate(2000);
+                        }
 
                     },
                     error: function (e) {
@@ -150,11 +154,7 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simple
                 if (self.myNotes1.at(0).get('service_id') == undefined) {
                     $(BB.Elements.GET_INLINE).trigger('click');
                 } else {
-                    self._onQueueDataAvailable(
-                        self.myNotes1.at(0).get('business_id'),
-                        self.myNotes1.at(0).get('line_id'),
-                        self.myNotes1.at(0).get('service_id'),
-                        self.myNotes1.at(0).get('verification_id'));
+                    self._onQueueDataAvailable();
                 }
             });
 
