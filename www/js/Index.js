@@ -86,6 +86,7 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
             note.set('service_id', i_service_id);
             self.myNotes1.add(note);
             note.save();
+            self.myNotes1.on('sync',function(){});
             // self.myNotes1.fetch();
         },
 

@@ -68,6 +68,7 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simple
                     success: function (e) {
                         self.myNotes1.at(0).set('service_id', e.service_id);
                         self.myNotes1.at(0).set('verification_id', e.verification);
+                        self.myNotes1.at(0).save();
                         self._onQueueDataAvailable();
                     },
 
