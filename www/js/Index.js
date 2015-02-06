@@ -77,11 +77,13 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
             });
         },
 
-        _createModel: function (i_line_id, i_business_id) {
+        _createModel: function (i_line_id, i_business_id, i_verification_id, i_service_id) {
             var self = this;
             var note = new NoteModel();
             note.set('line_id', i_line_id);
             note.set('business_id', i_business_id);
+            note.set('verification_id', i_verification_id);
+            note.set('service_id', i_service_id);
             self.myNotes1.add(note);
             note.save();
             // self.myNotes1.fetch();
@@ -100,7 +102,7 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
 
                 BB.comBroker.listenWebViews('commPageReady', function () {
                     if (self.m_savedData) {
-                        self._createModel(self.m_savedData.line_id, self.m_savedData.business_id);
+                        self._createModel(self.m_savedData.line_id, self.m_savedData.business_id, self.m_savedData.verification, self.m_savedData.service_id);
                         supersonic.ui.layers.push(self.m_commPageView.getPageView());
                     }
                 });

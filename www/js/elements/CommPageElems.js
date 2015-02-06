@@ -12,6 +12,7 @@ define(['jquery', 'backbone'], function ($, Backbone) {
 
             // elements
             this.NOW_SERVING = '#nowServing'
+            this.NOW_SERVING_LABEL = '#nowServingLabel';
             this.GET_INLINE = '#getInLine';
             this.RELEASE_SPOT = '#releaseSpot';
             this.LINE_POSITION_WRAP= '#linePositionWrap';

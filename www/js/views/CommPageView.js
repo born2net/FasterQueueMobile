@@ -30,9 +30,11 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simple
             var leftButton = new steroids.buttons.NavigationBarButton();
             var rightButton = new steroids.buttons.NavigationBarButton();
             leftButton.title = "";
-            leftButton.onTap = function() {};
+            leftButton.onTap = function () {
+            };
             rightButton.title = "";
-            rightButton.onTap = function() {};
+            rightButton.onTap = function () {
+            };
 
             steroids.view.navigationBar.update({
                 title: 'virtual queue',
@@ -42,10 +44,10 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simple
                     right: [rightButton]
                 }
             }, {
-                onSuccess: function() {
+                onSuccess: function () {
                     steroids.view.navigationBar.show();
                 },
-                onFailure: function() {
+                onFailure: function () {
                 }
             });
         },
@@ -64,22 +66,7 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simple
                         url: BB.CONSTS.BASE_URL
                     },
                     success: function (e) {
-
-                        var saveData = {
-                            business_id: self.myNotes1.at(0).get('business_id'),
-                            line_id: self.myNotes1.at(0).get('line_id'),
-                            service_id: e.service_id,
-                            verification: e.verification
-                        };
-                        simplestorage.set('fq', saveData);
-
-                        $(BB.Elements.GET_INLINE).hide();
-                        $(BB.Elements.RELEASE_SPOT).show();
-                        $(BB.Elements.LINE_POSITION_WRAP).show();
-                        $(BB.Elements.VERIFICATION_WRAP).show();
-
-                        $(BB.Elements.LINE_POSITION_WRAP).find('span').text(saveData.service_id);
-                        $(BB.Elements.VERIFICATION_WRAP).find('span').text(saveData.verification);
+                        self._onQueueDataAvailable(self.myNotes1.at(0).get('business_id'), self.myNotes1.at(0).get('line_id'), e.service_id, e.verification);
                     },
 
                     error: function (e) {
@@ -91,9 +78,33 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simple
 
             $(BB.Elements.RELEASE_SPOT).on('click', function () {
                 simplestorage.deleteKey('fq');
-                supersonic.ui.layers.pop();
+                $('.goodbye').hide();
+                setTimeout(function(){
+                    navigator.app.exitApp();
+                },2000);
+                $(BB.Elements.NOW_SERVING_LABEL).text('Goodbye');
+                //supersonic.ui.layers.pop();
             });
+        },
 
+        _onQueueDataAvailable: function (i_business_id, i_line_id, i_service_id, i_verification_id) {
+            var self = this;
+
+            var saveData = {
+                business_id: i_business_id,
+                line_id: i_line_id,
+                service_id: i_service_id,
+                verification_id: i_verification_id
+            };
+            simplestorage.set('fq', saveData);
+
+            $(BB.Elements.GET_INLINE).hide();
+            $(BB.Elements.RELEASE_SPOT).show();
+            $(BB.Elements.LINE_POSITION_WRAP).show();
+            $(BB.Elements.VERIFICATION_WRAP).show();
+
+            $(BB.Elements.LINE_POSITION_WRAP).find('span').text(i_service_id);
+            $(BB.Elements.VERIFICATION_WRAP).find('span').text(i_verification_id);
         },
 
         /**
@@ -134,6 +145,19 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simple
         _initModelsCollection: function () {
             var self = this;
             self.myNotes1 = new AuthCollection([], {locationUrl: '/BusinessInfo'});
+            self.myNotes1.on('sync', function () {
+
+                if (self.myNotes1.at(0).get('service_id') == undefined) {
+                    $(BB.Elements.GET_INLINE).trigger('click');
+                } else {
+                    self._onQueueDataAvailable(
+                        self.myNotes1.at(0).get('business_id'),
+                        self.myNotes1.at(0).get('line_id'),
+                        self.myNotes1.at(0).get('service_id'),
+                        self.myNotes1.at(0).get('verification_id'));
+                }
+            });
+
             self.myNotes1.on('onLineId', function () {
                 self._pollNowServicing();
             });
