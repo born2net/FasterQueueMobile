@@ -90,22 +90,55 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simple
             });
         },
 
+        /**
+         Get current server date / time
+         @method _getServerDateTime server:getDateTime
+         @param {Function} i_cb
+         **/
+        _getServerDateTime: function (i_cb) {
+            var self = this;
+            $.ajax({
+                url: 'https://secure.digitalsignage.com:442/GetDateTime',
+                success: function (dateTime) {
+                    $.proxy(i_cb, self)(dateTime);
+                },
+                error: function (e) {
+                    log('error ajax ' + e);
+                },
+                dataType: 'json'
+            });
+        },
+
+        /**
+         Whenever data is available, regardless if it's fresh from the server or via the LocalStorage,
+         we proceed by updating UI to indicate to customer his position in the queue as well as update the
+         local storage with all latest data
+         @method _onQueueDataAvailable
+         **/
         _onQueueDataAvailable: function () {
             var self = this;
-            var saveData = {
-                business_id: self.myNotes1.at(0).get('business_id'),
-                line_id: self.myNotes1.at(0).get('line_id'),
-                service_id: self.myNotes1.at(0).get('service_id'),
-                verification_id: self.myNotes1.at(0).get('verification_id')
-            };
-            simplestorage.set('fq', saveData);
 
-            $(BB.Elements.GET_INLINE).hide();
-            $(BB.Elements.RELEASE_SPOT).show();
-            $(BB.Elements.LINE_POSITION_WRAP).show();
-            $(BB.Elements.VERIFICATION_WRAP).show();
-            $(BB.Elements.LINE_POSITION_WRAP).find('span').text(self.myNotes1.at(0).get('service_id'));
-            $(BB.Elements.VERIFICATION_WRAP).find('span').text(self.myNotes1.at(0).get('verification_id'));
+            self._getServerDateTime(function (i_date) {
+
+                self.myNotes1.at(0).set('date', i_date.date);
+
+                var saveData = {
+                    business_id: self.myNotes1.at(0).get('business_id'),
+                    line_id: self.myNotes1.at(0).get('line_id'),
+                    service_id: self.myNotes1.at(0).get('service_id'),
+                    verification_id: self.myNotes1.at(0).get('verification_id'),
+                    date: self.myNotes1.at(0).get('date')
+                };
+                simplestorage.set('fq', saveData);
+
+                $(BB.Elements.GET_INLINE).hide();
+                $(BB.Elements.RELEASE_SPOT).show();
+                $(BB.Elements.LINE_POSITION_WRAP).show();
+                $(BB.Elements.VERIFICATION_WRAP).show();
+                $(BB.Elements.LINE_POSITION_WRAP).find('span').text(self.myNotes1.at(0).get('service_id'));
+                $(BB.Elements.VERIFICATION_WRAP).find('span').text(self.myNotes1.at(0).get('verification_id'));
+            });
+
         },
 
         /**

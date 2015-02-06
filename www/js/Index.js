@@ -28,10 +28,37 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
             var self = this;
             self.m_savedData = simplestorage.get('fq');
             self._clearLocalData();
+
             if (self.m_savedData) {
-                simplestorage.set('fq', self.m_savedData);
-                $(BB.Elements.LINE_ID).val(self.m_savedData.line_id);
+                // if localstorage is from today use, otherwise dump it
+                self._getServerDateTime(function (date) {
+                    if (self.m_savedData.date == date.date) {
+                        simplestorage.set('fq', self.m_savedData);
+                        $(BB.Elements.LINE_ID).val(self.m_savedData.line_id);
+                    } else {
+                        self.m_savedData = undefined;
+                    }
+                });
             }
+        },
+
+        /**
+         Get current server date / time
+         @method _getServerDateTime server:getDateTime
+         @param {Function} i_cb
+         **/
+        _getServerDateTime: function (i_cb) {
+            var self = this;
+            $.ajax({
+                url: 'https://secure.digitalsignage.com:442/GetDateTime',
+                success: function (dateTime) {
+                    $.proxy(i_cb, self)(dateTime);
+                },
+                error: function (e) {
+                    log('error ajax ' + e);
+                },
+                dataType: 'json'
+            });
         },
 
         _clearLocalData: function () {
@@ -86,7 +113,8 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
             note.set('service_id', i_service_id);
             self.myNotes1.add(note);
             note.save();
-            self.myNotes1.on('sync',function(){});
+            self.myNotes1.on('sync', function () {
+            });
             // self.myNotes1.fetch();
         },
 
