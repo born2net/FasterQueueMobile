@@ -151,7 +151,7 @@ define(['jquery', 'backbone', 'PageView', 'AuthCollection', 'NoteModel', 'simple
             var lastCalledQueue = function () {
 
                 $.ajax({
-                    url: 'https://secure.digitalsignage.com:442/LastCalledQueue',
+                    url: BB.CONSTS.BASE_URL  + '/LastCalledQueue',
                     data: {
                         business_id: self.myNotes1.at(0).get('business_id'),
                         line_id: self.myNotes1.at(0).get('line_id')

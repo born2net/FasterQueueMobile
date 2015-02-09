@@ -14,7 +14,7 @@ define(['underscore', 'jquery', 'backbone', 'backbone.controller', 'ComBroker', 
     BB.EVENTS = {};
     BB.LOADING = {};
     BB.CONSTS = {};
-    BB.CONSTS.BASE_URL = 'https://secure.digitalsignage.com:442';
+    BB.CONSTS.BASE_URL = 'https://secure.digitalsignage.com:443';
     BB.lib = new Lib();
     window.log = BB.lib.log;
     window.jlog = BB.lib.jlog;

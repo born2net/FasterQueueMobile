@@ -81,7 +81,7 @@ define(['Setup', 'LocalCollection', 'AuthCollection', 'Elems', 'StackView', 'Not
         _getBusinessId: function (i_line_id) {
             var self = this;
             $.ajax({
-                url: 'https://secure.digitalsignage.com:442/GetBusinessId',
+                url: BB.CONSTS.BASE_URL + '/GetBusinessId',
                 data: {
                     line_id: i_line_id
                 },
