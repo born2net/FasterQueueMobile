@@ -11,6 +11,7 @@ Links
 -----
 - [Landing page](http://www.fasterq.com)
 - [FasterQ introduction](http://www.digitalsignage.com/_html/video_tutorials.html?videoNumber=FasterQ)
+- [StudioLite dev](https://github.com/born2net/signagestudio_web-lite)
 - [HTML5 component development Intro](http://www.digitalsignage.com/_html/video_tutorials.html?videoNumber=htmlSdkIntro)
 - [HTML5 component development API](http://www.digitalsignage.com/_html/video_tutorials.html?videoNumber=htmlSdkAPI)
 - [HTML5 component development Debug/setup](http://www.digitalsignage.com/_html/video_tutorials.html?videoNumber=htmlSdkDebug)
